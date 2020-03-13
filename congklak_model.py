@@ -13,7 +13,7 @@ import time
 class CongklakModel:
     N_PEMAIN=2
     N_LUBANG=7
-    ISI_AWAL=4    
+    ISI_AWAL=7
     ISI_TOTAL = ISI_AWAL*N_LUBANG*N_PEMAIN
     
     ISI_BANYAK=9
@@ -35,8 +35,10 @@ class CongklakModel:
     # private variable, tak bisa diakses leh pemain
     # tabungan ada di lubang ke-8 (index 7)
     
-    __lubang = [[4, 4, 4, 4, 4, 4, 4, 0],
-                [4, 4, 4, 4, 4, 4, 4, 0]]
+    '''__lubang = [[4, 4, 4, 4, 4, 4, 4, 0],
+                [4, 4, 4, 4, 4, 4, 4, 0]]'''
+    __lubang = [[7, 7, 7, 7, 7, 7, 7, 0],
+                [7, 7, 7, 7, 7, 7, 7, 0]]
     __pemain=0
     __sisi=0
     __langkah=0
@@ -83,8 +85,8 @@ class CongklakModel:
         self.__sisi=0
         self.__langkah=0
         
-    def gantian(self):
-        time.sleep(1.5)
+    def gantian(self,delay_time):
+        time.sleep(delay_time)
         self.__pemain = (self.__pemain + 1) % self.N_PEMAIN
         return self.__pemain
     
@@ -107,9 +109,8 @@ class CongklakModel:
 
     # jalan satu langkah
     # return S_LANJUT ... S_MATI
-    def jalan(self):
-        
-        time.sleep(0.5)
+    def jalan(self,delay_time):
+        time.sleep(delay_time)
         # kalau dari awal biji sudah 0, salah jalan. Ulang
         if (self.__biji == 0):
             return self.S_ULANG
@@ -146,7 +147,7 @@ class CongklakModel:
         self.__langkah = langkah
         
         # kalau biji masih ada, lanjutkan
-        if (biji > 0):            
+        if (biji > 0):
             return self.S_LANJUT
 
         # biji habis ...
