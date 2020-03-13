@@ -8,6 +8,7 @@ Congklak Board Game
 """
 
 import random
+import time
 
 class CongklakModel:
     N_PEMAIN=2
@@ -83,6 +84,7 @@ class CongklakModel:
         self.__langkah=0
         
     def gantian(self):
+        time.sleep(1.5)
         self.__pemain = (self.__pemain + 1) % self.N_PEMAIN
         return self.__pemain
     
@@ -105,7 +107,9 @@ class CongklakModel:
 
     # jalan satu langkah
     # return S_LANJUT ... S_MATI
-    def jalan(self):       
+    def jalan(self):
+        
+        time.sleep(0.5)
         # kalau dari awal biji sudah 0, salah jalan. Ulang
         if (self.__biji == 0):
             return self.S_ULANG

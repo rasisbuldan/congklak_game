@@ -23,6 +23,6 @@ class CongklakPlayer:
     # lubang mulai
     def main(self, papan):
         pilih = random.randint(0, papan.N_LUBANG-1) 
-        print(self.nama, "main ", pilih)
+        #print(self.nama, "main ", pilih)
         return pilih
 
