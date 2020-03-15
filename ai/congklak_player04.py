@@ -12,13 +12,14 @@ import random
 from congklak_model import CongklakModel
 from congklak_player import CongklakPlayer
 
+
 class CongklakPlayer04(CongklakPlayer):
-    
+
     def __init__(self):
         super().__init__('PruneMast3r999')
-        
+
     # Pemain beraksi
-    # Gunakan informasi dari papan untuk memilih nomor 
+    # Gunakan informasi dari papan untuk memilih nomor
     # lubang mulai
     def main_old(self, papan):
         nexts = []
@@ -31,16 +32,16 @@ class CongklakPlayer04(CongklakPlayer):
 
         # tambahkan yang maksimal
         for i in range(len(lubang)):
-            if (lubang[i] >= max):        
+            if (lubang[i] >= max):
                 nexts.append((lubang[i], i))
 
         print(nexts)
         pilih = random.randint(0, len(nexts)-1)
         return nexts[pilih][1]
-        
+
 # --------holy limit----------
 
-    def initial_state(self,p,i=None):
+    def initial_state(self, p, i=None):
         # initial_state() --> list of lubang
         # Indeks lubang: (0) 0-6, 7 tabung
         #                (1) 8-14, 15 tabung
@@ -49,16 +50,16 @@ class CongklakPlayer04(CongklakPlayer):
         h0 = h0 + [CongklakModel(9).getTabungan(0)]
         h1 = CongklakModel(9).getLubang(1)
         h1 = h1 + [CongklakModel(9).getTabungan(1)]
-        print('h0: ',h0)
-        print('h1: ',h1)
+        print('h0: ', h0)
+        print('h1: ', h1)
         if i == 0:
             return h0
         elif i == 1:
             return h1
         elif i == None:
-            return [(h0 + h1),0,0,0,0,False]
+            return [(h0 + h1), 0, 0, 0, 0, False]
 
-    def advance(self,x,p,initial):
+    def advance(self, x, p, initial):
         # advance(move,initial_state) --> [bank0,bank1,stepover0,stepover1]
         # Get initial position value
         # x : index lubang
@@ -78,7 +79,7 @@ class CongklakPlayer04(CongklakPlayer):
         j = 0
 
         if initial[4] == True:
-            return [initial[0],initial[1],initial[2],initial[3]]
+            return [initial[0], initial[1], initial[2], initial[3]]
         else:
             # get_hole --> value, index
             def get_hole(k):
@@ -110,10 +111,10 @@ class CongklakPlayer04(CongklakPlayer):
                         k = (k + 1) % 16
                         h[k % 16] += 1
                         j -= 1
-                        
+
                         again = True
                         break
-                    
+
                     # -- Lubang
                     elif h[(k + 1) % 16] != 0:
                         # Adv
@@ -134,7 +135,7 @@ class CongklakPlayer04(CongklakPlayer):
 
                             # ...
                             h[7] += h[k] + h[14 - k]
-                            h[k] = h[14 -k] = 0
+                            h[k] = h[14 - k] = 0
                             break
                         # Mati
                         else:
@@ -144,7 +145,7 @@ class CongklakPlayer04(CongklakPlayer):
                             j -= 1
 
                             break
-                        
+
                 # Stepover
                 if k > 7 and k != 15:
                     stepover1 += 1
@@ -158,31 +159,30 @@ class CongklakPlayer04(CongklakPlayer):
             #print('(adv) final: ',[h, b0, b1, s0, s1, again])
             return [h, b0, b1, s0, s1, again]
 
-    def move_possibility(self,initial,p):
+    def move_possibility(self, initial, p):
         # move_possibility(initial_state,p) --> list of move of player p
         move = []
         h = initial[0]
         #print('initial h: ',h)
-        for i in range(0,7):
+        for i in range(0, 7):
             #print('initial i: ',i)
             if h[i + 8*p] != 0:
-                move.append([i,h[i + 8*p]])
+                move.append([i, h[i + 8*p]])
         #print('move: ',move[0])
         return move
 
     def main(self, papan):
         #dari keadaan board initial, catat banyak_tabungan kita & lawan
         p = self.nomor
-        print('no: ',p)
+        print('no: ', p)
         state0 = self.initial_state(0)
-        print('state0: ',state0)
+        print('state0: ', state0)
         h_bank_x0 = state0[0][(7 + 8*p) % 16]
         h_bank_y0 = state0[0][(15 + 8*p) % 16]
         w = [0.4, 0.1, 0.4, 0.1]
-        max_of_min = [-999,-999,-999]
-        print('p: ',p)
+        max_of_min = [-999, -999, -999]
+        print('p: ', p)
         print(self.move_possibility(state0, p))
-
 
         if len(self.move_possibility(state0, 1-p)) == 0:
             return self.move_possibility(state0, p)[0][0]
@@ -194,34 +194,36 @@ class CongklakPlayer04(CongklakPlayer):
             return self.move_possibility(state0, p)[0][0]
         else:
             #loop untuk semua kemungkinan gerakan kita
-            for x in self.move_possibility(state0, p):    #todo: define our_possibility
+            # todo: define our_possibility
+            for x in self.move_possibility(state0, p):
                 #run langkah x1 sampai keadaan ending langkah, lalu
                 state1 = self.advance(x[0], p, state0)
                 #catat banyak_tabungan kita dan jumlah lubang lawan yg disinggahi, lalu
                 h_bank_x1 = state1[1]
-                h_stepover_x1 = state1[3]   #harusnya suatu method
+                h_stepover_x1 = state1[3]  # harusnya suatu method
                 fe_buffer_y = []
                 #loop untuk semua kemungkinan gerakan lawan
-                for y in self.move_possibility(state1, 1-p):   #todo: define opponent_possibility
+                # todo: define opponent_possibility
+                for y in self.move_possibility(state1, 1-p):
                     #run langkah y lawan sampai keadaan ending langkah lawan, lalu
                     state2 = self.advance(y[0], 1-p, state1)
-                    print('state1: ',state1)
-                    print('state ({},{}): '.format(x[0],y[0]),state2)
+                    print('state1: ', state1)
+                    print('state ({},{}): '.format(x[0], y[0]), state2)
                     #catat banyak_tabungan lawan dan jumlah lubang kita yg disinggahi lawan, lalu
                     h_bank_y1 = state2[1]
-                    h_stepover_y1 = state2[3]   #harusnya suatu method
+                    h_stepover_y1 = state2[3]  # harusnya suatu method
                     #hitung fungsi evaluasi,
-                    f_e =  w[0] * (h_bank_x1 - h_bank_x0)
+                    f_e = w[0] * (h_bank_x1 - h_bank_x0)
                     f_e -= w[1] * h_stepover_x1
                     f_e -= w[2] * (h_bank_y1 - h_bank_y0)
                     f_e += w[3] * h_stepover_y1
-                    print('fe: ',f_e)
+                    print('fe: ', f_e)
                     #simpan f_e di array all_f_e[x,y]
                     if p == 0:
-                        fe_buffer_y.append([round(f_e,3),x[0],y[0]])
+                        fe_buffer_y.append([round(f_e, 3), x[0], y[0]])
                     elif p == 1:
-                        fe_buffer_y.append([round(f_e,3),6-x[0],6-y[0]])
-                    print('fe_buffer: ',fe_buffer_y)
+                        fe_buffer_y.append([round(f_e, 3), 6-x[0], 6-y[0]])
+                    print('fe_buffer: ', fe_buffer_y)
                     #jika selain x1, maka
                     if x[0] != 0:
             			#jika f_e lebih kecil dari max_of_min,
@@ -233,7 +235,7 @@ class CongklakPlayer04(CongklakPlayer):
                 if x[0] == 0:
                     #max_of_min = min(all_f_e[x1,:])
                     #index_max_of_min = indexof(min(all_f_e[x1,:]))
-                    print('fe_buffer: ',fe_buffer_y)
+                    print('fe_buffer: ', fe_buffer_y)
                     if fe_buffer_y == []:
                         break
                     max_of_min = min(fe_buffer_y[:])
@@ -241,21 +243,22 @@ class CongklakPlayer04(CongklakPlayer):
                 elif len(fe_buffer_y[:]) != 0:
                     #jika min(all_f_e[x,:]) > max_of_min , maka
                     buf_min = min(fe_buffer_y[:])[0]
-                    print('mom: ',max_of_min[0])
+                    print('mom: ', max_of_min[0])
                     if buf_min > max_of_min[0]:
                         #max_of_min = min(all_f_e[x,:])
                         #index_max_of_min = indexof(min(all_f_e[x,:]))
                         max_of_min = min(fe_buffer_y[:])
                         print(max_of_min)
-            print('mom: ', max_of_min[0],'x: ',max_of_min[1],' val: ',state0[0][(max_of_min[1] + 8*p) % 16])
+            print('mom: ', max_of_min[0], 'x: ', max_of_min[1],
+                  ' val: ', state0[0][(max_of_min[1] + 8*p) % 16])
             if max_of_min[1] == -999:
                 #print('move available:', self.move_possibility(state0, p)[0][0])
-                print('returning1: ',self.move_possibility(state0, 1-p)[0][0])
+                print('returning1: ', self.move_possibility(state0, 1-p)[0][0])
                 return self.move_possibility(state0, p)[0][0]
             else:
                 if p == 0:
-                    print('returning2: ',max_of_min[1])
+                    print('returning2: ', max_of_min[1])
                     return max_of_min[1]
                 elif p == 1:
-                    print('returning3: ',6-max_of_min[1])
+                    print('returning3: ', 6-max_of_min[1])
                     return (6-max_of_min[1])
